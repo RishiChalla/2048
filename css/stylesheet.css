@@ -1,0 +1,22 @@
+body {
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+
+#solve {
+	position: fixed;
+	top: 650px;
+	left: calc(50% - 140px);
+	background-color: red;
+	padding: 18px 75px;
+	border: none;
+	font-family: arial;
+	font-size: 20px;
+	color: white;
+	cursor: pointer;
+}
+
+#solve:hover {
+	background-color: #a51717;
+}
