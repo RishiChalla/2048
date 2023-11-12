@@ -67,13 +67,6 @@ class Solver {
 	 * Chooses the best action based on the current state
 	 */
 	chooseAction() {
-		// Epsilon-greedy implementation
-		const EPSILON = 0.95;
-
-		// Explore with probability 1 - EPSILON
-		if (Math.random() > EPSILON) return Object.values(actions)[randomNumber(0, 3)];
-
-		// Exploit with probability EPISLON
 		let bestAction = null;
 		let largest = Number.NEGATIVE_INFINITY;
 		for (let action of Object.values(actions)) {
