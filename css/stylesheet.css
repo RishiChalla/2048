@@ -6,7 +6,7 @@ body {
 
 #solve {
 	position: fixed;
-	top: 650px;
+	top: 80%;
 	left: calc(50% - 140px);
 	background-color: red;
 	padding: 18px 75px;
@@ -15,6 +15,7 @@ body {
 	font-size: 20px;
 	color: white;
 	cursor: pointer;
+	transition: 0.3s;
 }
 
 #solve:hover {
