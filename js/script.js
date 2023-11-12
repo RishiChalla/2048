@@ -1,10 +1,29 @@
+/**
+ * @type {HTMLCanvasElement}
+ */
 var canvas;
+
+/**
+ * @type {CanvasRenderingContext2D}
+ */
 var ctx;
+
+/**
+ * @type {Point}
+ */
 var mousePos;
+
+/**
+ * @type {Board}
+ */
 var board;
-var wait = false;
-var done = false;
+
+/**
+ * @type {Solver}
+ */
 var solver;
+
+var isSolving = false;
 
 window.onload = function() {
 	canvas = document.getElementById("canvas");
@@ -20,24 +39,11 @@ window.onload = function() {
 	});
 
 	window.addEventListener("keydown", function(evt) {
-		if (wait == false) {
-			if (evt.keyCode == 37) {
-				board.left();
-			}
-			if (evt.keyCode == 38) {
-				board.up();
-			}
-			if (evt.keyCode == 39) {
-				board.right();
-			}
-			if (evt.keyCode == 40) {
-				board.down();
-			}
-			wait = true;
-			window.setTimeout(function() {
-				wait = false;
-			}, 100);
-		}
+		if (isSolving) return; // No user input while solver is working
+		if (evt.key == "ArrowUp") board.up();
+		else if (evt.key == "ArrowLeft") board.left();
+		else if (evt.key == "ArrowRight") board.right();
+		else if (evt.key == "ArrowDown") board.down();
 	});
 
 	document.getElementById("solve").onclick = solveIt;
@@ -46,11 +52,10 @@ window.onload = function() {
 };
 
 function solveIt() {
-	if (done == false) {
-		solver = new Solver(board, 50);
-		solver.solve();
-		done = true;
-	}
+	if (isSolving) return;
+	solver = new Solver(board, 50);
+	solver.solve();
+	isSolving = true;
 }
 
 function setup() {

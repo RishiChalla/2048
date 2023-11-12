@@ -21,6 +21,14 @@ var Board;
 		this.messageDone = false;
 	};
 
+	Board.prototype.copy = function() {
+		const board = new Board(this.pos, this.size.x);
+		board.grid = window.structuredClone(this.grid);
+		board.score = this.score;
+		board.messageDone = this.messageDone;
+		return board;
+	};
+
 	Board.prototype.draw = function() {
 		ctx.roundRect(this.pos, this.size, 50);
 		ctx.fillStyle = "#333333";
