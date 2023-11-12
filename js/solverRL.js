@@ -32,7 +32,7 @@ class Solver {
 		const gridValue = state.grid.flat().reduce((a, b) => a + cellValue(b.value), 0);
 		// Value of empty cells is just the count of empty cells exponentiated
 		const emptyValue = Math.exp(board.grid.flat().reduce((a, b) => a + Number(b.value == 0), 0));
-		return gridValue + emptyValue;
+		return Math.log(gridValue) + emptyValue;
 	}
 
 	/**
@@ -56,11 +56,38 @@ class Solver {
 	 * @param {String} action The action to take
 	 */
 	calcActionValue(state, action) {
-		const stateValue = this.calcStateValue(state);
+		const DISCOUNTING = 0.8;
+		const MAX_STEPS = 5;
+		const CONVERGENCE_CRITERIA = 0.01;
+
 		const copy = state.copy();
 		this.performAction(copy, action);
-		const newValue = this.calcStateValue(copy);
-		return newValue - stateValue;
+		// Check for invalid movement (when movement equals existing state)
+		if (copy.grid.flat().map(x => x.value).equals(state.grid.flat().map(x => x.value))) return Number.NEGATIVE_INFINITY;
+
+		// Apply discounting algorithm where we determine the value of the action by accounting for all future actions
+		// multiplied by a "discounting" value.
+		let discounting = DISCOUNTING;
+		let prevValue = 0;
+		let value = discounting * this.calcStateValue(copy);
+		let states = [copy]
+		let count = 0;
+		while (Math.abs(Math.log(value) - Math.log(prevValue)) > CONVERGENCE_CRITERIA && count < MAX_STEPS) {
+			count++;
+			discounting *= DISCOUNTING;
+			prevValue = value;
+			let newStates = [];
+			for (state of states) {
+				for (action of Object.values(actions)) {
+					const newState = this.performAction(state.copy(), action);
+					newStates.push(newState);
+					value += discounting * this.calcStateValue(newState);
+				}
+			}
+			states = newStates;
+		}
+
+		return value;
 	}
 
 	/**
