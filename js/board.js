@@ -21,6 +21,14 @@ var Board;
 		this.messageDone = false;
 	};
 
+	Board.prototype.copy = function() {
+		const board = new Board(this.pos, this.size.x);
+		board.grid = window.structuredClone(this.grid);
+		board.score = this.score;
+		board.messageDone = this.messageDone;
+		return board;
+	};
+
 	Board.prototype.draw = function() {
 		ctx.roundRect(this.pos, this.size, 50);
 		ctx.fillStyle = "#333333";
@@ -107,19 +115,21 @@ var Board;
 
 		this.spawnNewTile();
 
-		if (this.gameOver == true) {
-			alert("Game Over! You lost. Click ok to start a new game.");
-			window.location.replace("");
-		}
 
-		for (var x = 0; x < this.grid.length; x++) {
-			for (var y = 0; y < this.grid[x].length; y++) {
-				if (this.grid[x][y].value == 2048 && this.messageDone == false) {
-					alert("Congratulations, you have beat the game. Continuing further may result in bugs as not everything is color coded.");
-					this.messageDone = true;
-				}
-			}
-		}
+		// TMP - Removed win and lose messages to avoid them calling when RL algorithm is running simulations
+		// if (this.gameOver == true) {
+		// 	alert("Game Over! You lost. Click ok to start a new game.");
+		// 	window.location.replace("");
+		// }
+
+		// for (var x = 0; x < this.grid.length; x++) {
+		// 	for (var y = 0; y < this.grid[x].length; y++) {
+		// 		if (this.grid[x][y].value == 2048 && this.messageDone == false) {
+		// 			alert("Congratulations, you have beat the game. Continuing further may result in bugs as not everything is color coded.");
+		// 			this.messageDone = true;
+		// 		}
+		// 	}
+		// }
 
 		return true;
 	};
