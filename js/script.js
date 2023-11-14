@@ -23,6 +23,7 @@ var board;
  */
 var solver;
 
+var isDark = false;
 var isSolving = false;
 
 window.onload = function() {
@@ -46,6 +47,9 @@ window.onload = function() {
 		else if (evt.key == "ArrowDown") board.down();
 	});
 
+	isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+	window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => isDark = event.matches);
+
 	document.getElementById("solve").onclick = solveIt;
 
 	setup();
@@ -64,7 +68,7 @@ function setup() {
 }
 
 function draw() {
-	ctx.fillStyle = "black";
+	ctx.fillStyle = isDark ? "black" : "white";
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 	board.draw();
 }
