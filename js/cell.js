@@ -1,14 +1,24 @@
-var Cell;
 
-(function() {
-	Cell = function(pos, size, value, arrPos) {
+class Cell {
+	
+	/**
+	 * Creates a new 2048 cell on the board
+	 * @param {Point} pos The position of the cell on the canvas for rendering
+	 * @param {Box} size The size of the cell on the canvas for rendering
+	 * @param {Number} value The value of the cell on the board
+	 * @param {Point} arrPos The index of the cell on the board in a 2d array setting
+	 */
+	constructor(pos, size, value, arrPos) {
 		this.pos = new Point(pos.x, pos.y);
 		this.size = new Box(size, size);
 		this.value = value;
 		this.arrPos = new Point(arrPos.x, arrPos.y);
-	};
+	}
 
-	Cell.prototype.draw = function() {
+	/**
+	 * Draws the cell on the board
+	 */
+	draw() {
 		// Set fill style
 		const fillMap = {
 			"0": "gray", "2": "#cccc00", "4": "#999900", "8": "#ffa500", "16": "#ff0000", "32": "#66ccff",
@@ -25,9 +35,10 @@ var Cell;
 		ctx.fillStyle = "#ffffff";
 		ctx.textAlign = "center";
 		ctx.fillText(this.value, this.pos.x + this.size.width / 2, this.pos.y + this.size.height / 2 + 30);
-	};
+	}
 
-	Cell.prototype.update = function() {
+	// Updates the cell and draws it
+	update() {
 		this.draw();
-	};
-}());
+	}
+}

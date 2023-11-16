@@ -1,35 +1,61 @@
-var Board;
 
-(function() {
-	Board = function(pos, size) {
+class Board {
+
+	/**
+	 * Creates a new 2048 board
+	 * @param {Point} pos The position of the board on the canvas for rendering
+	 * @param {Number} size The size of the board on the canvas for rendering
+	 */
+	constructor(pos, size) {
 		this.pos = new Point(pos.x, pos.y);
 		this.size = new Box(size, size);
 		this.grid = [];
+
+		// Calculate the position of each cell on the board and add it
 		for (var x = 0; x < 4; x++) {
 			this.grid.push([]);
 			for (var y = 0; y < 4; y++) {
-				this.grid[x].push(new Cell(new Point(this.pos.x + 15 + (x*(this.size.width / 4)), this.pos.y + 15 + (y*(this.size.width / 4))), (this.size.width / 4) - 30, 0, new Point(x, y)));
+				this.grid[x].push(
+					new Cell(
+						new Point(
+							this.pos.x + 15 + (x*(this.size.width / 4)),
+							this.pos.y + 15 + (y*(this.size.width / 4))
+						),
+						(this.size.width / 4) - 30, 0, new Point(x, y)
+					)
+				);
 			}
 		}
+
+		// Setup grid
 		this.grid[randomNumber(0, 3)][randomNumber(0, 3)].value = 2;
 		var rand = [randomNumber(0, 3), randomNumber(0, 3)];
 		while (this.grid[rand[0]][rand[1]].value == 2) {
 			rand = [randomNumber(0, 3), randomNumber(0, 3)];
 		}
 		this.grid[rand[0]][rand[1]].value = 2;
+
+		// Calculate score
 		this.score = 0;
 		this.messageDone = false;
-	};
+	}
 
-	Board.prototype.copy = function() {
+	/**
+	 * Returns a deep copy of the board, meant for simulation and not rendering
+	 * @returns {Board} A deep copy of the board
+	 */
+	copy() {
 		const board = new Board(this.pos, this.size.x);
 		board.grid = window.structuredClone(this.grid);
 		board.score = this.score;
 		board.messageDone = this.messageDone;
 		return board;
-	};
+	}
 
-	Board.prototype.draw = function() {
+	/**
+	 * Draws the board on the canvas
+	 */
+	draw() {
 		ctx.roundRect(this.pos, this.size, 50);
 		ctx.fillStyle = "#333333";
 		ctx.fill();
@@ -41,9 +67,12 @@ var Board;
 				this.grid[x][y].update();
 			}
 		}
-	};
+	}
 
-	Board.prototype.shiftDown = function() {
+	/**
+	 * Shifts all tiles down but does not merge anything
+	 */
+	shiftDown() {
 		var xToCheck = this.getXToCheck();
 
 		for (var i = 0; i < xToCheck.length; i++) {
@@ -62,7 +91,11 @@ var Board;
 		}
 	};
 
-	Board.prototype.getXToCheck = function() {
+	/**
+	 * Gets the x indices to check
+	 * @returns {Array<Number>} The indices of x positions to check
+	 */
+	getXToCheck() {
 		var not0 = [];
 
 		for (var x = 0; x < this.grid.length; x++) {
@@ -86,7 +119,10 @@ var Board;
 		return xToCheck;
 	};
 
-	Board.prototype.mergeDown = function() {
+	/**
+	 * Merges down the tiles
+	 */
+	mergeDown() {
 		var xToCheck = this.getXToCheck();
 
 		for (var i = 0; i < xToCheck.length; i++) {
@@ -105,7 +141,11 @@ var Board;
 		this.shiftDown();
 	};
 
-	Board.prototype.down = function() {
+	/**
+	 * Shifts and merges all the tiles down
+	 * @returns {Boolean} Whether or not the merge was successful
+	 */
+	down() {
 		var backup = this.convertToArray(Object.assign([], this.grid));
 
 		this.shiftDown();
@@ -134,7 +174,12 @@ var Board;
 		return true;
 	};
 
-	Board.prototype.convertToArray = function(grid) {
+	/**
+	 * Converts the grid into an array
+	 * @param {Array<Array<Cell>>} grid The grid to convert
+	 * @returns {Array<Array<Number>>} The grid with values instead of cells
+	 */
+	convertToArray(grid) {
 		var finalVal = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
 		for (var x = 0; x < 4; x++) {
 			for (var y = 0; y < 4; y++) {
@@ -144,17 +189,33 @@ var Board;
 		return finalVal;
 	};
 
-	Board.prototype.hasBelow = function(x, y) {
+	/**
+	 * Checks if there's an item below in the grid
+	 * @param {Number} x The x position to check
+	 * @param {Number} y The y position to check
+	 * @returns {Boolean} Whether or not there's an item below
+	 */
+	hasBelow(x, y) {
 		if (y == 3) return false;
 		return this.grid[x][y + 1].value != 0;
 	};
 
-	Board.prototype.hasAbove = function(x, y) {
+	/**
+	 * Checks if there's an item above in the grid
+	 * @param {Number} x The x position to check
+	 * @param {Number} y The y position to check
+	 * @returns {Boolean} Whether or not there's an item above
+	 */
+	hasAbove(x, y) {
 		if (y == 0) return false;
 		return this.grid[x][y - 1].value != 0;
 	};
 
-	Board.prototype.up = function() {
+	/**
+	 * Shifts and merges the board up completely
+	 * @returns {Boolean} Whether or not the shift/merge was successful
+	 */
+	up() {
 		this.rotate();
 		this.rotate();
 		var a = this.down();
@@ -163,7 +224,11 @@ var Board;
 		return a;
 	};
 
-	Board.prototype.left = function() {
+	/**
+	 * Shifts and merges the board left completely
+	 * @returns {Boolean} Whether or not the shift/merge was successful
+	 */
+	left() {
 		this.rotate();
 		this.rotate();
 		this.rotate();
@@ -172,7 +237,11 @@ var Board;
 		return a;
 	};
 
-	Board.prototype.right = function() {
+	/**
+	 * Shifts and merges the board right completely
+	 * @returns {Boolean} Whether or not the shift/merge was successful
+	 */
+	right() {
 		this.rotate();
 		var a = this.down();
 		this.rotate();
@@ -181,7 +250,10 @@ var Board;
 		return a;
 	};
 
-	Board.prototype.rotate = function() {
+	/**
+	 * Rotates the board clockwise
+	 */
+	rotate() {
 		var finalVal = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
 		for (var x = 0; x < 4; x++) {
 			for (var y = 0; y < 4; y++) {
@@ -195,7 +267,10 @@ var Board;
 		}
 	};
 
-	Board.prototype.spawnNewTile = function() {
+	/**
+	 * Checks for gameover and spawns a new tile
+	 */
+	spawnNewTile() {
 		var gameOver = true;
 
 		for (var x = 0; x < this.grid.length; x++) {
@@ -228,4 +303,4 @@ var Board;
 			}
 		}
 	};
-}());
+}

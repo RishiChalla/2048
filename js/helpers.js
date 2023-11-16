@@ -1,17 +1,49 @@
-function Point(x, y) {
-	this.x = x;
-	this.y = y;
+
+class Point {
+
+	/**
+	 * Creates a new point
+	 * @param {Number} x Coordinates
+	 * @param {Number} y Coordinates
+	 */
+	constructor(x, y) {
+		this.x = x;
+		this.y = y;
+	}
 }
 
-function Box(width, height) {
-	this.width = width;
-	this.height = height;
+class Box {
+
+	/**
+	 * Creates a new box'
+	 * @param {Number} width size
+	 * @param {Number} height size
+	 */
+	constructor(width, height) {
+		this.width = width;
+		this.height = height;
+	}
 }
 
+/**
+ * Helper method that renders a rounded rectangle
+ * @param {Point} pos The position to render at
+ * @param {Box} size The size to render
+ * @param {Number} borderRadius The border radius to use when rendering
+ */
 CanvasRenderingContext2D.prototype.roundRect = function(pos, size, borderRadius) {
 	roundRect(this, pos.x, pos.y, size.width, size.height, borderRadius);
 };
 
+/**
+ * Helper method that renders a rounded rectangle
+ * @param {CanvasRenderingContext2D} ctx Canvas context
+ * @param {Number} x Coordinates
+ * @param {Number} y Coordinates
+ * @param {Number} width Size
+ * @param {Number} height Size
+ * @param {Number} radius Rounded size
+ */
 function roundRect(ctx, x, y, width, height, radius) {
 	if (typeof stroke == 'undefined') {
 		stroke = true;
@@ -40,14 +72,30 @@ function roundRect(ctx, x, y, width, height, radius) {
 	ctx.quadraticCurveTo(x, y, x + radius.tl, y);
 }
 
+/**
+ * Creaets a random integer inclusive of the minimum and maximum
+ * @param {Number} min The minumum number
+ * @param {Number} max The maximum number
+ * @returns {Number} Random generated number
+ */
 function randomNumber(min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+/**
+ * Checks if an index is valid in an array
+ * @param {Number} index The index to check
+ * @returns Whether or not the index is valid
+ */
 Array.prototype.validIndex = function(index) {
 	return (this.length - 1 >= index && index > 0);
 };
 
+/**
+ * Checks if two arrays are equal
+ * @param {Array<Object>} array An array to check
+ * @returns {Boolean} Whether or not the two arrays are equal
+ */
 Array.prototype.equals = function(array) {
 	if (array.length != this.length) return false;
 	for (var i = 0; i < array.length; i++) {
@@ -62,8 +110,17 @@ Array.prototype.equals = function(array) {
 	return true;
 };
 
+/**
+ * Creates a shallow copy of an object
+ */
 Object.shallowAssign = Object.assign;
 
+/**
+ * Creates a deep copy of an object
+ * @param {Object} a Object to assign from
+ * @param {Object} b Object to assign to
+ * @returns 
+ */
 Object.assign = function(a, b) {
 	if (a.constructor === Array && b.constructor === Array) {
 		for (var i = 0; i < b.length; i++) {

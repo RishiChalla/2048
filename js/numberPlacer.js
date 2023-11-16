@@ -1,13 +1,22 @@
-var NumberPlacer;
 
-(function() {
-	NumberPlacer = function(pos, number, solver) {
+class NumberPlacer {
+
+	/**
+	 * Creates a new number placer
+	 * @param {Point} pos 
+	 * @param {Number} number 
+	 * @param {Solver} solver 
+	 */
+	constructor(pos, number, solver) {
 		this.pos = pos;
 		this.number = number;
 		this.solver = solver;
-	};
+	}
 
-	NumberPlacer.prototype.update = function() {
+	/**
+	 * Updates the number placer
+	 */
+	update() {
 		if (this.number == this.game.grid[this.pos.x][this.pos.y].value) {
 			return;
 		}
@@ -21,5 +30,6 @@ var NumberPlacer;
 			this.game.left();
 			return;
 		}
-	};
-}());
+	}
+
+}
