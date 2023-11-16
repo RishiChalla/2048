@@ -1,3 +1,4 @@
+
 /**
  * The html canvas
  * @type {HTMLCanvasElement}
@@ -34,6 +35,12 @@ var isDark = false;
  */
 var isSolving = false;
 
+/**
+ * The size of the canvas
+ * @type {Box}
+ */
+var canvasSize = new Box(window.innerWidth, window.innerHeight);
+
 // Called on window load
 window.onload = function() {
 	// Setup canvas and context
@@ -49,7 +56,7 @@ window.onload = function() {
 	document.getElementById("solve").onclick = solveIt;
 
 	// Setup board and start update loop
-	board = new Board(new Point((canvas.width / 2) - 500, (canvas.height / 2) - 600), 1000);
+	board = new Board();
 	update();
 };
 
@@ -60,6 +67,9 @@ window.onkeydown = function(e) {
 	else if (e.key == "ArrowLeft") board.left();
 	else if (e.key == "ArrowRight") board.right();
 	else if (e.key == "ArrowDown") board.down();
+
+	// Checks for gameover
+	if (board.isGameover()) alert("Game over!");
 };
 
 // Sets up the canvas and the context
@@ -69,6 +79,10 @@ function setupCanvas() {
 	canvas.width = window.innerWidth * window.devicePixelRatio;
 	canvas.height = window.innerHeight * window.devicePixelRatio;
 	ctx = canvas.getContext("2d");
+	ctx.resetTransform();
+	const scaleFactor = canvas.height / 1080;
+	ctx.scale(scaleFactor, scaleFactor);
+	canvasSize = new Box(canvas.width * 1080 / canvas.height, 1080);
 }
 
 // Creates an AI agent to solve the game and runs it in 50 millisecond intervals
@@ -83,6 +97,6 @@ function solveIt() {
 function update() {
 	window.requestAnimationFrame(update);
 	ctx.fillStyle = isDark ? "black" : "white";
-	ctx.fillRect(0, 0, canvas.width, canvas.height);
+	ctx.fillRect(0, 0, canvasSize.width, canvasSize.height);
 	board.draw();
 }

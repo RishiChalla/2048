@@ -26,12 +26,10 @@ class Solver {
 	 * @param {Board} state The given state to calculate the value of (range 0 - 16)
 	 */
 	calcStateValue(state) {
-		// Calculates value of cells exponentiated by the number away from 20048
-		const cellValue = value => Math.exp(value ? Math.log(value) / Math.log(2) : 0);
-		// Sums value of all cells in board
-		const gridValue = state.grid.flat().reduce((a, b) => a + cellValue(b.value), 0);
+		// Sums value of all cells in board & Calculates value of cells exponentiated by the number away from 20048
+		const gridValue = _.chain(state.grid).flatten().sumBy(value => Math.exp(value ? Math.log(value) / Math.log(2) : 0)).value();
 		// Value of empty cells is just the count of empty cells exponentiated
-		const emptyValue = Math.exp(board.grid.flat().reduce((a, b) => a + Number(b.value == 0), 0));
+		const emptyValue = Math.exp(_.chain(board.grid).flatten().filter(value => value === 0).size().value());
 		return Math.log(gridValue) + emptyValue;
 	}
 
@@ -63,7 +61,7 @@ class Solver {
 		const copy = state.copy();
 		this.performAction(copy, action);
 		// Check for invalid movement (when movement equals existing state)
-		if (copy.grid.flat().map(x => x.value).equals(state.grid.flat().map(x => x.value))) return Number.NEGATIVE_INFINITY;
+		if (_.isEqual(copy.grid, state.grid)) return Number.NEGATIVE_INFINITY;
 
 		// Apply discounting algorithm where we determine the value of the action by accounting for all future actions
 		// multiplied by a "discounting" value.
@@ -94,16 +92,7 @@ class Solver {
 	 * Chooses the best action based on the current state
 	 */
 	chooseAction() {
-		let bestAction = null;
-		let largest = Number.NEGATIVE_INFINITY;
-		for (let action of Object.values(actions)) {
-			const value = this.calcActionValue(this.board, action);
-			if (value <= largest) continue;
-			largest = value;
-			bestAction = action;
-		}
-
-		return bestAction;
+		return _.chain(actions).values().maxBy(action => this.calcActionValue(this.board, action)).value();
 	}
 
 	/**
@@ -114,6 +103,7 @@ class Solver {
 			// Perform best action
 			const bestAction = this.chooseAction();
 			this.performAction(this.board, bestAction);
+			if (this.board.isGameover() || _.flatten(this.board.grid).indexOf(2048) !== -1) this.cancel();
 		}, this.updateInterval);
 	}
 
